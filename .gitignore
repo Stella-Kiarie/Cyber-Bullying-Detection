@@ -1,0 +1,7 @@
+ls-env/
+learn-env/
+__pycache__/
+*.pyc
+*.csv
+*.dll
+*.def
