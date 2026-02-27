@@ -113,6 +113,7 @@ class EDA:
 
         print("\nLanguage Percentages:")
         print((self.data["language"].value_counts(normalize=True) * 100).round(2))
+   
 
     # --------------------------------------------------
     # 6️⃣ Peak Posting Time Analysis (Kenyan Context)
