@@ -4,7 +4,7 @@
 _RAW_NAMES = [
     "mwangi", "kamau", "njoki", "wanjiru", "mutua",
     "dee", "diana d", "captain morgan", "brian",
-    "otieno", "akinyi", "kiptoo", "kibet", "chebet","Salet","onjiri"
+    "otieno", "akinyi", "kiptoo", "kibet", "chebet","Salet","onjiri","obina","Korir"
     "kartelo", "harrison", "wanyama", "matiangi",
     "ruto", "odinga", "dorea", "obinna", "janet",
     "jackson", "patrick osio", "oppina", "sabrina",
@@ -23,9 +23,9 @@ _RAW_NAMES = [
     "corazon kwamboka", "baby rue",
     "emmanuel chiche", "milly chebby",
     "finess ngara", "joy kendi",
-    "bernice nunah", "richy haniel",
-    "the wajesus family", "tt comedian",
-    "urban street", "otile brown",
+    "bernice nunah", "richy haniel","Obinna","diana","obiezza","abraham","kartelo","patelo","obi","deno dartel","ibrah",
+    "the wajesus family", "tt comediana","ibraah","ngindi","kenyatta","piuto","ians","pkuto",
+    "urban street", "otile brown","iyanoo","quevo","iyanoo","Hana","Hanna"
     "njugush", "elsa majimbo",
     "chief safro", "kakan maiyo",
     "ethic entertainment", "reckless",
