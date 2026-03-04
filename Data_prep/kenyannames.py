@@ -11,7 +11,7 @@ _RAW_NAMES = [
     "pamela", "captain", "hannah", "jesus",
     "stevo simple boy", "culture", "patero",
     "kenya", "awoh", "mary", "ivano", "hana",
-    "mc exodus", "brina", "masha", "bobo actress",
+    "mc exodus", "brina", "masha", "bobo actress","obbina ",
     "bull's family", "pastor nga'ng'a",
     "diana luvunda", "samir", "freddie oxygen",
     "oga", "mr t", "kinuthia", "jeff koinange",
