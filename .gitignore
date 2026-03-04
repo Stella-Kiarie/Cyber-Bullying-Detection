@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 *.dll
 *.def
+.ipynb_checkpoints/
