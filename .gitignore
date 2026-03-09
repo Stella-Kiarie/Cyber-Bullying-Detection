@@ -1,26 +1,10 @@
+Models/
 ls-env/
-learn-env/
-__pycache__/
-*.pyc
-*.dll
-*.def
-# Ignore all sub-model weight folders
-Models/*_sub_model/
-Models/category_tokenizer/
 
-# Ignore python cache and checkpoints
-__pycache__/
-.ipynb_checkpoints/
-
-# Ignore large data files
-*.zip
-data/
-datasets/
-*.csv
-*.pkl
 *.joblib
+*.pkl
 *.pt
 *.h5
-*.model
+
 __pycache__/
 .ipynb_checkpoints/
