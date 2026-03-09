@@ -18,11 +18,11 @@ device = "cpu"
 
 category_mapping = {
     "LABEL_0": "Constructive",
-    "LABEL_1": "Others",
-    "LABEL_2": "Cyberbullying",
+    "LABEL_1": "Cyberbullying",
+    "LABEL_2": "Harmful",
     "LABEL_3": "Irony",
     "LABEL_4": "Offensive",
-    "LABEL_5": "Harmful"
+    "LABEL_5": "Others"
 }
 
 
