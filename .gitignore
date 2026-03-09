@@ -4,3 +4,14 @@ __pycache__/
 *.pyc
 *.dll
 *.def
+# Ignore all sub-model weight folders
+Models/*_sub_model/
+Models/category_tokenizer/
+
+# Ignore python cache and checkpoints
+__pycache__/
+.ipynb_checkpoints/
+
+# Ignore large data files
+*.zip
+
