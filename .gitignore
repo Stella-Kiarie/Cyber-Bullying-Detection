@@ -14,4 +14,13 @@ __pycache__/
 
 # Ignore large data files
 *.zip
-
+data/
+datasets/
+*.csv
+*.pkl
+*.joblib
+*.pt
+*.h5
+*.model
+__pycache__/
+.ipynb_checkpoints/
