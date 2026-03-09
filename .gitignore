@@ -1,10 +1,63 @@
-Models/
-ls-env/
+# Models/
+# ls-env/
 
+# *.joblib
+# *.pkl
+# *.pt
+# *.h5
+
+# __pycache__/
+# .ipynb_checkpoints/
+# learn-env/
+
+# ----------------------------
+# Virtual environments
+# ----------------------------
+ls-env/
+learn-env/
+venv/
+.env/
+
+# ----------------------------
+# Model files (anywhere)
+# ----------------------------
 *.joblib
 *.pkl
 *.pt
 *.h5
 
-__pycache__/
+# ----------------------------
+# Model folders
+# ----------------------------
+Models/
+models/
+
+# ----------------------------
+# Jupyter notebooks cache
+# ----------------------------
 .ipynb_checkpoints/
+
+# ----------------------------
+# Python cache
+# ----------------------------
+__pycache__/
+*.pyc
+
+# ----------------------------
+# Ignore models saved inside notebooks folder
+# ----------------------------
+Notebooks/*.joblib
+Notebooks/*.pkl
+Notebooks/*.pt
+Notebooks/*.h5
+
+# ----------------------------
+# SQLite binaries (root folder)
+# ----------------------------
+sqlite3.def
+sqlite3.dll
+
+# ----------------------------
+# Vs code editor settings 
+# ----------------------------
+.vscode/
