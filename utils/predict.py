@@ -4,6 +4,7 @@ import streamlit as st
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 from Data_prep.preprocesssing import TextPreprocessor
+from Models.Feature_engineering import FeatureEngineer
 
 # -------------------------------------------------
 # DEVICE
