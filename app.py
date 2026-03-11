@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.predict import analyze_comment
+from inference.predict import analyze_comment
 
 st.set_page_config(layout="wide")
 if "page" not in st.session_state:
@@ -329,97 +329,165 @@ import plotly.express as px
 import streamlit as st
 
 def show_batch():
+
+    import pandas as pd
+    import plotly.express as px
+
     st.markdown("## 📂 Batch Comment Moderation")
     st.write("Upload a CSV file for large-scale analysis.")
 
-    # --- Step 1: Initialize Session State ---
+    # ---------------------------
+    # SESSION STATE
+    # ---------------------------
+
+    if "batch_df" not in st.session_state:
+        st.session_state.batch_df = None
+
     if "batch_results" not in st.session_state:
         st.session_state.batch_results = None
-    if "current_file_name" not in st.session_state:
-        st.session_state.current_file_name = None
 
-    # --- Step 2: File Uploader ---
-    uploaded_file = st.file_uploader("Upload CSV File", type=["csv"])
+    if "uploaded_file_id" not in st.session_state:
+        st.session_state.uploaded_file_id = None
+
+
+    # ---------------------------
+    # FILE UPLOADER
+    # ---------------------------
+
+    uploaded_file = st.file_uploader(
+        "Upload CSV File",
+        type=["csv"],
+        key="batch_uploader"
+    )
 
     if uploaded_file is not None:
-        # Detect if the file has changed by comparing names
-        if st.session_state.current_file_name != uploaded_file.name:
-            # NEW FILE DETECTED: Clear old results and update name
+
+        # create unique ID for file
+        file_id = uploaded_file.name + str(uploaded_file.size)
+
+        # detect NEW file
+        if st.session_state.uploaded_file_id != file_id:
+
+            df = pd.read_csv(uploaded_file)
+
+            st.session_state.uploaded_file_id = file_id
+            st.session_state.batch_df = df
             st.session_state.batch_results = None
-            st.session_state.current_file_name = uploaded_file.name
-            st.rerun()  # Force rerun to clear the UI of old data
 
-        # Read the file
-        df = pd.read_csv(uploaded_file)
+        df = st.session_state.batch_df
 
-        # Handle column naming (Accepts 'comment' or 'text')
-        target_col = None
+
+        # ---------------------------
+        # DETECT TEXT COLUMN
+        # ---------------------------
+
         if "comment" in df.columns:
-            target_col = "comment"
-        elif "text" in df.columns:
-            target_col = "text"
+            text_col = "comment"
 
-        if not target_col:
-            st.error(f"Error: Could not find a 'comment' or 'text' column. Found: {list(df.columns)}")
+        elif "text" in df.columns:
+            text_col = "text"
+
+        else:
+            st.error(
+                f"CSV must contain **comment** or **text** column.\n\n"
+                f"Columns detected: {list(df.columns)}"
+            )
             return
 
-        st.markdown("### 📄 Preview of Uploaded Data")
+
+        # ---------------------------
+        # PREVIEW DATASET
+        # ---------------------------
+
+        st.markdown("### 📄 Dataset Preview")
         st.dataframe(df.head())
 
-        # --- Step 3: Run Processing ---
-        # We only show the "Run" button if we haven't processed this file yet
+
+        # ---------------------------
+        # RUN MODERATION
+        # ---------------------------
+
         if st.session_state.batch_results is None:
+
             if st.button("🚀 Run Moderation Analysis"):
+
                 results = []
                 progress_bar = st.progress(0)
-                
-                # Iterate through rows
-                for i, row_text in enumerate(df[target_col]):
-                    # Call your analysis function
-                    # Ensure analyze_comment(text) returns a dictionary
-                    prediction = analyze_comment(str(row_text)) 
+
+                for i, text in enumerate(df[text_col]):
+
+                    prediction = analyze_comment(str(text))
                     results.append(prediction)
-                    
-                    # Update progress
+
                     progress_bar.progress((i + 1) / len(df))
 
-                # Create results dataframe and merge with original
                 results_df = pd.DataFrame(results)
-                # We reset index to ensure clean side-by-side concatenation
-                st.session_state.batch_results = pd.concat(
-                    [df.reset_index(drop=True), results_df.reset_index(drop=True)], 
+
+                final_df = pd.concat(
+                    [df.reset_index(drop=True), results_df],
                     axis=1
                 )
-                st.success("✅ Analysis Complete!")
-                st.rerun() # Refresh to show the results dashboard
 
-    # --- Step 4: Display Results (Only if they exist) ---
+                st.session_state.batch_results = final_df
+
+                st.success("✅ Batch analysis completed!")
+
+
+    # ---------------------------
+    # DISPLAY RESULTS
+    # ---------------------------
+
     if st.session_state.batch_results is not None:
+
         final_df = st.session_state.batch_results
-        
+
         st.markdown("---")
         st.subheader("📊 Moderation Results")
+
         st.dataframe(final_df)
 
-        # Download Button
-        csv_download = final_df.to_csv(index=False).encode("utf-8")
+        # Download
+        csv = final_df.to_csv(index=False).encode("utf-8")
+
         st.download_button(
-            label="📥 Download Labeled Dataset",
-            data=csv_download,
-            file_name=f"moderated_{st.session_state.current_file_name}",
-            mime="text/csv"
+            "📥 Download Labeled Dataset",
+            csv,
+            "moderated_comments.csv",
+            "text/csv"
         )
 
-        # --- Visual Insights ---
+        # ---------------------------
+        # DASHBOARD
+        # ---------------------------
+
+        st.markdown("### 📊 Dataset Insights")
+
         col1, col2 = st.columns(2)
+
         with col1:
-            category_fig = px.pie(final_df, names='category', title="Safety Categories", hole=0.4)
-            st.plotly_chart(category_fig, use_container_width=True)
-        
+
+            fig1 = px.pie(
+                final_df,
+                names="category",
+                title="Comment Category Distribution",
+                hole=0.4
+            )
+
+            st.plotly_chart(fig1, use_container_width=True)
+
         with col2:
-            lang_fig = px.bar(final_df['language'].value_counts().reset_index(), 
-                             x='language', y='count', title="Languages Detected")
-            st.plotly_chart(lang_fig, use_container_width=True)
+
+            lang_counts = final_df["language"].value_counts().reset_index()
+            lang_counts.columns = ["language", "count"]
+
+            fig2 = px.bar(
+                lang_counts,
+                x="language",
+                y="count",
+                title="Languages Detected"
+            )
+
+            st.plotly_chart(fig2, use_container_width=True)
 def show_assistant():
 
     st.markdown("## 🤖 AI Moderation Assistant")

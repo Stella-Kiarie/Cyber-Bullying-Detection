@@ -1,7 +1,7 @@
 import joblib
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, f1_score
-from Models.Feature_engineering import FeatureEngineer
+from inference.Feature_engineering import FeatureEngineer
 
 
 class SentimentRandomForest:

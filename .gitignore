@@ -1,74 +1,61 @@
-# Models/
-# ls-env/
-
-# *.joblib
-# *.pkl
-# *.pt
-# *.h5
-
-# __pycache__/
-# .ipynb_checkpoints/
-# learn-env/
-
-# ----------------------------
-# Virtual environments
-# ----------------------------
-ls-env/
-learn-env/
-venv/
-.env/
-
-# ----------------------------
-# VS Code editor settings
-# ----------------------------
-.vscode/
-
-# ----------------------------
-# Model artifact files (ignore anywhere)
-# ----------------------------
-*.joblib
-*.pkl
-*.pt
-*.h5
-
-# ----------------------------
-# Ignore model artifacts inside project folders
-# ----------------------------
-Models/*.joblib
-Models/*.pkl
-Models/*.pt
-Models/*.h5
-
-Notebooks/*.joblib
-Notebooks/*.pkl
-Notebooks/*.pt
-Notebooks/*.h5
-
-# ----------------------------
-# Dataset CSV files (keep folders but ignore data)
-# ----------------------------
-Labelled_Data/*.csv
-Raw_Dataset/*.csv
-
-# ----------------------------
-# Python cache files
+## ----------------------------
+# Python cache
 # ----------------------------
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
 # ----------------------------
-# Jupyter notebook checkpoints
+# Jupyter notebooks checkpoints
 # ----------------------------
 .ipynb_checkpoints/
 
 # ----------------------------
-# SQLite binaries
+# Virtual environments
 # ----------------------------
-sqlite3.def
-sqlite3.dll
+venv/
+env/
+.venv/
+cyberbully/
 
 # ----------------------------
-# OS generated files
+# System files
 # ----------------------------
 .DS_Store
 Thumbs.db
+
+# ----------------------------
+# Logs
+# ----------------------------
+*.log
+
+# ----------------------------
+# Temporary data
+# ----------------------------
+tmp/
+temp/
+
+# ----------------------------
+# Streamlit cache
+# ----------------------------
+.streamlit/
+
+# ----------------------------
+# Large datasets (optional)
+# ----------------------------
+Data/raw/
+Data/temp/
+
+# ----------------------------
+# Training outputs (optional)
+# ----------------------------
+training/checkpoints/
+training/runs/
+.ipynb_checkpoints
+
+# ----------------------------
+# IDE files
+# ----------------------------
+.vscode/
+.idea/
