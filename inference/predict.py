@@ -1,7 +1,7 @@
 import torch
 import joblib
-import streamlit as st
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from huggingface_hub import hf_hub_download
 
 from inference.preprocesssing import TextPreprocessor
 
@@ -14,7 +14,14 @@ device = torch.device("cpu")
 
 
 # -------------------------------------------------
-# CATEGORY LABEL FIX
+# HUGGING FACE REPO
+# -------------------------------------------------
+
+HF_REPO = "ste-pp/kenyan-cyberbullying-models"
+
+
+# -------------------------------------------------
+# CATEGORY LABEL MAPPING
 # -------------------------------------------------
 
 category_mapping = {
@@ -28,17 +35,25 @@ category_mapping = {
 
 
 # -------------------------------------------------
-# LOAD MODELS
+# LOAD CLASSICAL MODELS
 # -------------------------------------------------
 
-@st.cache_resource
-def load_models():
+def load_classical_models():
 
     preprocessor = TextPreprocessor()
 
-    # Classical ML models
-    language_bundle = joblib.load("Models/language_model.pkl")
-    sentiment_bundle = joblib.load("Models/sentiment_model.pkl")
+    language_path = hf_hub_download(
+        repo_id=HF_REPO,
+        filename="language_model.pkl"
+    )
+
+    sentiment_path = hf_hub_download(
+        repo_id=HF_REPO,
+        filename="sentiment_model.pkl"
+    )
+
+    language_bundle = joblib.load(language_path)
+    sentiment_bundle = joblib.load(sentiment_path)
 
     language_model = language_bundle["model"]
     language_fe = language_bundle["feature_engineer"]
@@ -46,113 +61,103 @@ def load_models():
     sentiment_model = sentiment_bundle["model"]
     sentiment_fe = sentiment_bundle["feature_engineer"]
 
-    # Tokenizer
-    tokenizer = AutoTokenizer.from_pretrained("Models/category_tokenizer")
-
-    # Category models
-    neutral_category_model = AutoModelForSequenceClassification.from_pretrained(
-        "Models/neutral_category_model"
-    ).to(device)
-
-    negative_category_model = AutoModelForSequenceClassification.from_pretrained(
-        "Models/negative_category_model"
-    ).to(device)
-
-    neutral_category_model.eval()
-    negative_category_model.eval()
-
-    # Subcategory models
-    subcategory_models = {
-
-        "Cyberbullying":
-            AutoModelForSequenceClassification.from_pretrained(
-                "Models/Cyberbullying_sub_model"
-            ).to(device),
-
-        "Offensive":
-            AutoModelForSequenceClassification.from_pretrained(
-                "Models/Offensive_sub_model"
-            ).to(device),
-
-        "Harmful":
-            AutoModelForSequenceClassification.from_pretrained(
-                "Models/Harmful_sub_model"
-            ).to(device),
-
-        "Constructive":
-            AutoModelForSequenceClassification.from_pretrained(
-                "Models/Constructive_sub_model"
-            ).to(device),
-
-        "Others":
-            AutoModelForSequenceClassification.from_pretrained(
-                "Models/Others_sub_model"
-            ).to(device),
-
-        "Irony":
-            AutoModelForSequenceClassification.from_pretrained(
-                "Models/Irony_sub_model"
-            ).to(device)
-    }
-
-    for m in subcategory_models.values():
-        m.eval()
-
-    # Label encoders
-    subcategory_encoders = {
-
-        "Cyberbullying":
-            joblib.load("Models/Cyberbullying_sub_model/label_encoder.pkl"),
-
-        "Offensive":
-            joblib.load("Models/Offensive_sub_model/label_encoder.pkl"),
-
-        "Harmful":
-            joblib.load("Models/Harmful_sub_model/label_encoder.pkl"),
-
-        "Constructive":
-            joblib.load("Models/Constructive_sub_model/label_encoder.pkl"),
-
-        "Others":
-            joblib.load("Models/Others_sub_model/label_encoder.pkl"),
-
-        "Irony":
-            joblib.load("Models/Irony_sub_model/label_encoder.pkl")
-    }
-
     return (
         preprocessor,
         language_model,
         language_fe,
         sentiment_model,
-        sentiment_fe,
-        tokenizer,
-        neutral_category_model,
-        negative_category_model,
-        subcategory_models,
-        subcategory_encoders
+        sentiment_fe
     )
 
+
+# -------------------------------------------------
+# LOAD CATEGORY MODELS
+# -------------------------------------------------
+def load_category_models():
+
+    tokenizer = AutoTokenizer.from_pretrained(
+        HF_REPO,
+        subfolder="category_tokenizer"
+    )
+
+    neutral_category_model = AutoModelForSequenceClassification.from_pretrained(
+        HF_REPO,
+        subfolder="neutral_category_model"
+    ).to(device)
+
+    negative_category_model = AutoModelForSequenceClassification.from_pretrained(
+        HF_REPO,
+        subfolder="negative_category_model"
+    ).to(device)
+
+    neutral_category_model.eval()
+    negative_category_model.eval()
+
+    return tokenizer, neutral_category_model, negative_category_model
+
+
+# -------------------------------------------------
+# LOAD SUBCATEGORY MODELS + ENCODERS
+# -------------------------------------------------
+
+def load_subcategory_models():
+
+    sub_models = {}
+    sub_encoders = {}
+
+    categories = [
+        "Constructive",
+        "Cyberbullying",
+        "Harmful",
+        "Irony",
+        "Offensive",
+        "Others"
+    ]
+
+    for cat in categories:
+
+        model = AutoModelForSequenceClassification.from_pretrained(
+            HF_REPO,
+            subfolder=f"{cat}_sub_model"
+        ).to(device)
+
+        model.eval()
+
+        encoder_path = hf_hub_download(
+            repo_id=HF_REPO,
+            filename=f"{cat}_sub_model/label_encoder.pkl"
+        )
+
+        encoder = joblib.load(encoder_path)
+
+        sub_models[cat] = model
+        sub_encoders[cat] = encoder
+
+    return sub_models, sub_encoders
+
+
+# -------------------------------------------------
+# INITIALIZE MODELS
+# -------------------------------------------------
 
 (
     preprocessor,
     language_model,
     language_fe,
     sentiment_model,
-    sentiment_fe,
-    tokenizer,
-    neutral_category_model,
-    negative_category_model,
-    subcategory_models,
-    subcategory_encoders
-) = load_models()
+    sentiment_fe
+) = load_classical_models()
+
+tokenizer, neutral_category_model, negative_category_model = load_category_models()
+
+subcategory_models, subcategory_encoders = load_subcategory_models()
 
 
 # -------------------------------------------------
 # TRANSFORMER PREDICTION
 # -------------------------------------------------
 
-def predict_transformer(model, text):
+def predict_transformer(model, tokenizer, text):
 
     inputs = tokenizer(
         text,
@@ -168,14 +173,47 @@ def predict_transformer(model, text):
         outputs = model(**inputs)
 
     logits = outputs.logits
+
     probs = torch.softmax(logits, dim=1)
 
     pred_id = torch.argmax(probs).item()
+
     confidence = probs[0][pred_id].item()
 
-    label = model.config.id2label.get(pred_id, f"LABEL_{pred_id}")
+    label = f"LABEL_{pred_id}"
 
     return label, confidence
+
+
+# -------------------------------------------------
+# PREPROCESS TEXT
+# -------------------------------------------------
+
+def preprocess_text(text):
+
+    return preprocessor.clean(text)
+
+
+# -------------------------------------------------
+# LANGUAGE PREDICTION
+# -------------------------------------------------
+
+def predict_language(text):
+
+    features = language_fe.transform([text])
+
+    return language_model.predict(features)[0]
+
+
+# -------------------------------------------------
+# SENTIMENT PREDICTION
+# -------------------------------------------------
+
+def predict_sentiment(text):
+
+    features = sentiment_fe.transform([text])
+
+    return sentiment_model.predict(features)[0]
 
 
 # -------------------------------------------------
@@ -187,23 +225,46 @@ def predict_category(text, sentiment):
     if sentiment == "Positive":
         return "Constructive", 1.0
 
-    elif sentiment == "Neutral":
+    if sentiment == "Neutral":
 
         label, conf = predict_transformer(
             neutral_category_model,
+            tokenizer,
             text
         )
-
-        return category_mapping.get(label, "Others"), conf
 
     else:
 
         label, conf = predict_transformer(
             negative_category_model,
+            tokenizer,
             text
         )
 
-        return category_mapping.get(label, "Cyberbullying"), conf
+    category = category_mapping.get(label, "Others")
+
+    return category, conf
+
+
+# -------------------------------------------------
+# SUBCATEGORY PREDICTION
+# -------------------------------------------------
+
+def predict_subcategory(text, category):
+
+    model = subcategory_models.get(category)
+    encoder = subcategory_encoders.get(category)
+
+    if model is None or encoder is None:
+        return "Unknown"
+
+    label, _ = predict_transformer(model, tokenizer, text)
+
+    sub_id = int(label.replace("LABEL_", ""))
+
+    subcategory = encoder.inverse_transform([sub_id])[0]
+
+    return subcategory
 
 
 # -------------------------------------------------
@@ -212,51 +273,33 @@ def predict_category(text, sentiment):
 
 def analyze_comment(text):
 
-    try:
+    text = preprocess_text(text)
 
-        text = preprocessor.clean(text)
+    language = predict_language(text)
 
-        # Language prediction
-        lang_features = language_fe.transform([text])
-        language = language_model.predict(lang_features)[0]
+    sentiment = predict_sentiment(text)
 
-        # Sentiment prediction
-        sent_features = sentiment_fe.transform([text])
-        sentiment = sentiment_model.predict(sent_features)[0]
+    category, confidence = predict_category(text, sentiment)
 
-        # Category prediction
-        category, confidence = predict_category(text, sentiment)
+    subcategory = predict_subcategory(text, category)
 
-        # Subcategory prediction
-        sub_model = subcategory_models.get(category)
-        encoder = subcategory_encoders.get(category)
+    return {
+        "language": language,
+        "sentiment": sentiment,
+        "category": category,
+        "subcategory": subcategory,
+        "confidence": round(confidence, 3)
+    }
 
-        subcategory = "Unknown"
 
-        if sub_model and encoder:
+# -------------------------------------------------
+# TEST PIPELINE
+# -------------------------------------------------
 
-            sub_label, _ = predict_transformer(sub_model, text)
+if __name__ == "__main__":
 
-            try:
-                sub_id = int(sub_label.replace("LABEL_", ""))
-                subcategory = encoder.inverse_transform([sub_id])[0]
-            except:
-                subcategory = "Unknown"
+    test_text = "You are stupid"
 
-        return {
-            "language": language,
-            "sentiment": sentiment,
-            "category": category,
-            "subcategory": subcategory,
-            "confidence": round(confidence, 3)
-        }
+    result = analyze_comment(test_text)
 
-    except Exception:
-
-        return {
-            "language": "Unknown",
-            "sentiment": "Unknown",
-            "category": "Unknown",
-            "subcategory": "Unknown",
-            "confidence": 0
-        }
+    print(result)

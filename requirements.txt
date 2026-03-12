@@ -7,3 +7,4 @@ numpy
 plotly
 joblib
 scipy
+huggingface_hub
