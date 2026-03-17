@@ -23,12 +23,10 @@ https://vibe-check-kenya.streamlit.app/
 ## 📸 Application Preview
 
 ### 🏠 Home Page
-
-*(Add screenshot here)*
+![Home](Images/Homepage.png)
 
 ### 📊 Comment Analysis
-
-*(Add screenshot here)*
+![Analysis](Images/analysis.png)
 
 ### 📂 Batch Processing
 
