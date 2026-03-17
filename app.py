@@ -710,7 +710,7 @@ The moderation system supports:
 
 • English
 • Kiswahili
-• Kenyan Sheng
+• Kenyan Slang
 
 The AI can detect code-mixed language used in Kenyan social media.
 """
@@ -782,135 +782,157 @@ Analyze: your comment
 def show_system():
 
     # -------------------------
-    # SECTION TITLE
+    # TITLE + KENYAN IDENTITY
     # -------------------------
-
     st.markdown("""
-    <h2 style="text-align:center;margin-bottom:30px;">
-    ⚙ AI Moderation System Overview
+    <h2 style="text-align:center;margin-bottom:10px;">
+    🇰🇪 AI Moderation System Architecture
     </h2>
     """, unsafe_allow_html=True)
 
+    st.markdown("""
+    <hr style="
+    height:4px;
+    border:none;
+    background: linear-gradient(
+    90deg,
+    black,
+    #DC2626,
+    white,
+    #16A34A
+    );
+    border-radius:3px;
+    margin-bottom:25px;
+    ">
+    """, unsafe_allow_html=True)
 
     # -------------------------
     # INTRO CARD
     # -------------------------
-
     st.markdown("""
     <div style="
     background:#111827;
     padding:28px;
     border-radius:14px;
-    border-top:3px solid #DC2626;
+    border-left:5px solid #DC2626;
     margin-bottom:35px;
     ">
-    <h4 style="margin-bottom:10px;color:#F9FAFB;">
-    AI-enabled Kenyan Social Media Moderation
-    </h4>
-
-    <p style="color:#D1D5DB;">
-    This system detects cyberbullying and harmful content across
-    multilingual Kenyan online conversations using machine learning
-    and transformer-based models.
-    </p>
+    <b>System Overview</b><br><br>
+    This is a multi-stage AI pipeline designed to detect cyberbullying in Kenyan 
+    social media by analyzing multilingual text (English, Kiswahili, Kenyan Slang).
+    Each model in the pipeline performs a specific task to improve overall accuracy.
     </div>
     """, unsafe_allow_html=True)
 
+    # -------------------------
+    # PIPELINE FLOW (NEW 🔥)
+    # -------------------------
+    st.markdown("### 🔄 System Pipeline")
+
+    st.markdown("""
+    <pre>
+Input Comment
+      ↓
+Text Preprocessing
+      ↓
+Language Detection
+      ↓
+Sentiment Analysis
+      ↓
+Category Classification
+      ↓
+Subcategory Detection
+      ↓
+Final Moderation Output
+    </pre>
+    """, unsafe_allow_html=True)
+
+    st.write("")
 
     # -------------------------
-    # AI PIPELINE
+    # AI PIPELINE COMPONENTS
     # -------------------------
-
-    st.markdown("### 🧠 Moderation Pipeline")
+    st.markdown("### 🧠 Pipeline Components")
 
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         st.markdown("""
-        <div style="background:#111827;padding:18px;border-radius:12px;border-left:4px solid #16A34A;">
-        <b>1️⃣ Preprocessing</b><br>
-        Cleaning and normalization of comments.
+        <div style="background:#111827;padding:18px;border-radius:12px;border-top:3px solid #16A34A;">
+        <b>Preprocessing</b><br>
+        Cleaning and normalization of multilingual text.
         </div>
         """, unsafe_allow_html=True)
 
     with col2:
         st.markdown("""
-        <div style="background:#111827;padding:18px;border-radius:12px;border-left:4px solid #16A34A;">
-        <b>2️⃣ Language Detection</b><br>
-        Detects English, Kiswahili, or Sheng.
+        <div style="background:#111827;padding:18px;border-radius:12px;border-top:3px solid #16A34A;">
+        <b>Language Detection</b><br>
+        Identifies English, Kiswahili, or Sheng.
         </div>
         """, unsafe_allow_html=True)
 
     with col3:
         st.markdown("""
-        <div style="background:#111827;padding:18px;border-radius:12px;border-left:4px solid #16A34A;">
-        <b>3️⃣ Sentiment Analysis</b><br>
-        Determines comment emotion.
+        <div style="background:#111827;padding:18px;border-radius:12px;border-top:3px solid #16A34A;">
+        <b>Sentiment Analysis</b><br>
+        Determines emotional tone.
         </div>
         """, unsafe_allow_html=True)
 
     with col4:
         st.markdown("""
-        <div style="background:#111827;padding:18px;border-radius:12px;border-left:4px solid #16A34A;">
-        <b>4️⃣ Toxicity Classification</b><br>
-        Detects cyberbullying and harmful language.
+        <div style="background:#111827;padding:18px;border-radius:12px;border-top:3px solid #16A34A;">
+        <b>Classification</b><br>
+        Detects harmful and toxic content.
         </div>
         """, unsafe_allow_html=True)
 
-
     st.write("")
-
 
     # -------------------------
     # MODEL COMPONENTS
     # -------------------------
-
-    st.markdown("### 🧩 Model Components")
+    st.markdown("### 🧩 Model Architecture")
 
     col1, col2 = st.columns(2)
 
     with col1:
         st.markdown("""
         <div style="background:#111827;padding:22px;border-radius:12px;">
-        • Language Detection Model<br>
-        • Sentiment Analysis Model<br>
-        • Category Classification Model
+        <b>Classical Models</b><br><br>
+        • Language Detection → LinearSVC<br>
+        • Sentiment Analysis → LinearSVC
         </div>
         """, unsafe_allow_html=True)
 
     with col2:
         st.markdown("""
         <div style="background:#111827;padding:22px;border-radius:12px;">
-        • Transformer Subcategory Models<br>
-        • Feature Engineering Modules<br>
-        • Text Preprocessing Pipeline
+        <b>Deep Learning Models</b><br><br>
+        • Category Classification → XLM-RoBERTa<br>
+        • Subcategory Detection → Transformers
         </div>
         """, unsafe_allow_html=True)
 
-
     st.write("")
-
 
     # -------------------------
     # SUPPORTED LANGUAGES
     # -------------------------
-
     st.markdown("### 🌍 Supported Languages")
 
     col1, col2, col3 = st.columns(3)
 
-    col1.metric("English", "Supported")
-    col2.metric("Kiswahili", "Supported")
-    col3.metric("Kenyan Sheng", "Supported")
-
+    col1.metric("English", "✔")
+    col2.metric("Kiswahili", "✔")
+    col3.metric("Sheng", "✔")
 
     st.write("")
-
 
     # -------------------------
     # MODERATION CATEGORIES
     # -------------------------
-
     st.markdown("### 🏷 Moderation Categories")
 
     col1, col2, col3 = st.columns(3)
@@ -960,30 +982,24 @@ def show_system():
         </div>
         """, unsafe_allow_html=True)
 
-
     st.write("")
 
-
     # -------------------------
-    # MODEL PERFORMANCE
+    # PERFORMANCE
     # -------------------------
-
     st.markdown("### 📈 Model Performance")
 
     col1, col2, col3 = st.columns(3)
 
-    col1.metric("Language Model", "95% Accuracy")
-    col2.metric("Sentiment Model", "92% Accuracy")
-    col3.metric("Category Model", "90% Accuracy")
-
+    col1.metric("Language Model", "95%")
+    col2.metric("Sentiment Model", "92%")
+    col3.metric("Classification Model", "90%")
 
     st.write("")
 
-
     # -------------------------
-    # TECHNOLOGY STACK
+    # TECH STACK
     # -------------------------
-
     st.markdown("### 🛠 Technology Stack")
 
     col1, col2 = st.columns(2)
