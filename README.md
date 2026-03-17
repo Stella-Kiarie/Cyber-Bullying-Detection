@@ -66,11 +66,17 @@ A **hierarchical AI pipeline** that:
 ---
 
 ## 🧠 System Workflow
-
-```text
-Input Comment → Language Detection → Sentiment Analysis → 
-Category Classification → Subcategory Detection → Output
-```
+Input Comment
+      ↓
+Language Detection
+      ↓
+Sentiment Analysis
+      ↓
+Category Classification
+      ↓
+Subcategory Detection
+      ↓
+Final Output
 
 ---
 
@@ -177,8 +183,3 @@ Educational use only
 * Hugging Face
 * YouTube Data API
 
----
-
-## ⭐ Support
-
-If you found this project useful, consider giving it a ⭐ on GitHub!
