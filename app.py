@@ -327,7 +327,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-
 def show_batch():
 
     import pandas as pd
@@ -349,7 +348,6 @@ def show_batch():
     if "uploaded_file_id" not in st.session_state:
         st.session_state.uploaded_file_id = None
 
-
     # ---------------------------
     # FILE UPLOADER
     # ---------------------------
@@ -362,10 +360,8 @@ def show_batch():
 
     if uploaded_file is not None:
 
-        # create unique ID for file
         file_id = uploaded_file.name + str(uploaded_file.size)
 
-        # detect NEW file
         if st.session_state.uploaded_file_id != file_id:
 
             df = pd.read_csv(uploaded_file)
@@ -375,7 +371,6 @@ def show_batch():
             st.session_state.batch_results = None
 
         df = st.session_state.batch_df
-
 
         # ---------------------------
         # DETECT TEXT COLUMN
@@ -394,14 +389,12 @@ def show_batch():
             )
             return
 
-
         # ---------------------------
         # PREVIEW DATASET
         # ---------------------------
 
         st.markdown("### 📄 Dataset Preview")
         st.dataframe(df.head())
-
 
         # ---------------------------
         # RUN MODERATION
@@ -432,7 +425,6 @@ def show_batch():
 
                 st.success("✅ Batch analysis completed!")
 
-
     # ---------------------------
     # DISPLAY RESULTS
     # ---------------------------
@@ -444,9 +436,60 @@ def show_batch():
         st.markdown("---")
         st.subheader("📊 Moderation Results")
 
-        st.dataframe(final_df)
+        # ---------------------------
+        # SUMMARY METRICS
+        # ---------------------------
 
-        # Download
+        st.markdown("### 📈 Key Insights")
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        total = len(final_df)
+        toxic = final_df[final_df["category"].isin(["Cyberbullying", "Harmful"])].shape[0]
+        positive = final_df[final_df["sentiment"] == "Positive"].shape[0]
+        negative = final_df[final_df["sentiment"] == "Negative"].shape[0]
+
+        col1.metric("Total Comments", total)
+        col2.metric("Toxic Comments", toxic)
+        col3.metric("Positive", positive)
+        col4.metric("Negative", negative)
+
+        # ---------------------------
+        # HIGHLIGHT TOXIC COMMENTS
+        # ---------------------------
+
+        st.markdown("### ⚠️ High Risk Comments")
+
+        toxic_df = final_df[final_df["category"].isin(["Cyberbullying", "Harmful"])]
+
+        if len(toxic_df) > 0:
+            st.dataframe(toxic_df.head(10))
+        else:
+            st.success("No harmful comments detected")
+
+        # ---------------------------
+        # SORT DATA
+        # ---------------------------
+
+        priority_order = {
+            "Harmful": 1,
+            "Cyberbullying": 2,
+            "Offensive": 3,
+            "Irony": 4,
+            "Others": 5,
+            "Constructive": 6
+        }
+
+        final_df["priority"] = final_df["category"].map(priority_order)
+        final_df = final_df.sort_values("priority")
+
+        st.markdown("### 📄 Full Results")
+        st.dataframe(final_df.drop(columns=["priority"]))
+
+        # ---------------------------
+        # DOWNLOAD
+        # ---------------------------
+
         csv = final_df.to_csv(index=False).encode("utf-8")
 
         st.download_button(
@@ -457,12 +500,15 @@ def show_batch():
         )
 
         # ---------------------------
-        # DASHBOARD
+        # DASHBOARD (KENYAN COLORS)
         # ---------------------------
 
         st.markdown("### 📊 Dataset Insights")
 
         col1, col2 = st.columns(2)
+
+        # Kenyan flag color palette
+        colors = ["#16A34A", "#DC2626", "#000000", "#F59E0B", "#9CA3AF"]
 
         with col1:
 
@@ -470,7 +516,14 @@ def show_batch():
                 final_df,
                 names="category",
                 title="Comment Category Distribution",
-                hole=0.4
+                hole=0.4,
+                color_discrete_sequence=colors
+            )
+
+            fig1.update_layout(
+                plot_bgcolor="#111827",
+                paper_bgcolor="#111827",
+                font=dict(color="#F9FAFB")
             )
 
             st.plotly_chart(fig1, use_container_width=True)
@@ -484,10 +537,29 @@ def show_batch():
                 lang_counts,
                 x="language",
                 y="count",
-                title="Languages Detected"
+                title="Languages Detected",
+                color="language",
+                color_discrete_sequence=["#16A34A", "#DC2626", "#000000"]
+            )
+
+            fig2.update_layout(
+                plot_bgcolor="#111827",
+                paper_bgcolor="#111827",
+                font=dict(color="#F9FAFB")
             )
 
             st.plotly_chart(fig2, use_container_width=True)
+
+        # ---------------------------
+        # INSIGHTS
+        # ---------------------------
+
+        st.markdown("### 🧠 Insights")
+
+        if toxic > 0:
+            st.warning(f"{toxic} harmful comments detected. Immediate moderation recommended.")
+        else:
+            st.success("Dataset is mostly safe with minimal harmful content.")
 def show_assistant():
 
     st.markdown("## 🤖 AI Moderation Assistant")
