@@ -66,20 +66,26 @@ A **hierarchical AI pipeline** that:
 ---
 
 ## 🧠 System Workflow
+
 <p align="center">
 
-```text
-Input Comment
-      ↓
-Language Detection
-      ↓
-Sentiment Analysis
-      ↓
-Category Classification
-      ↓
-Subcategory Detection
-      ↓
-Final Output
+<pre>
+      Input Comment
+            ↓
+   Language Detection
+            ↓
+   Sentiment Analysis
+            ↓
+  Category Classification
+            ↓
+ Subcategory Detection
+            ↓
+        Final Output
+</pre>
+
+</p>
+
+---
 
 ## 🛠 Key Features
 
@@ -183,4 +189,6 @@ Educational use only
 * Moringa School
 * Hugging Face
 * YouTube Data API
+
+---
 
