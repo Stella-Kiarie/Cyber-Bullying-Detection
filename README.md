@@ -27,13 +27,13 @@ https://vibe-check-kenya.streamlit.app/
 
 
 ### 📊 Comment Analysis
-![Analysis](<Images/analysis1.png)
-![Analysis](<Images/analysis2.png)
+![Analysis](./Images/analysis1.png)
+![Analysis](./Images/analysis2.png)
 
 ### 📂 Batch Processing
 
-![batch](<Images/batch1.png)
-![batch](<Images/batch2.png)
+![batch](./Images/batch1.png)
+![batch](./Images/batch2.png)
 
 ---
 
