@@ -66,6 +66,9 @@ A **hierarchical AI pipeline** that:
 ---
 
 ## 🧠 System Workflow
+<p align="center">
+
+```text
 Input Comment
       ↓
 Language Detection
@@ -77,8 +80,6 @@ Category Classification
 Subcategory Detection
       ↓
 Final Output
-
----
 
 ## 🛠 Key Features
 
