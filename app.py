@@ -200,14 +200,62 @@ def show_analysis():
 
     import plotly.graph_objects as go
 
-    st.markdown("## 📊 Comment Analysis")
+    # -----------------------------
+    # TITLE (KENYAN IDENTITY)
+    # -----------------------------
+    st.markdown("""
+    <h2 style="text-align:center;">
+    🇰🇪 AI-Powered Kenyan Comment Analysis
+    </h2>
+    """, unsafe_allow_html=True)
 
+    st.markdown("""
+    <hr style="
+    height:4px;
+    border:none;
+    background: linear-gradient(
+    90deg,
+    black,
+    #DC2626,
+    white,
+    #16A34A
+    );
+    border-radius:3px;
+    ">
+    """, unsafe_allow_html=True)
+
+    # -----------------------------
+    # EXAMPLE BUTTONS
+    # -----------------------------
+    st.markdown("### ⚡ Try Example Comments")
+
+    c1, c2, c3 = st.columns(3)
+
+    example_comment = ""
+
+    if c1.button("Toxic Example"):
+        example_comment = "Wewe ni mjinga kabisa"
+
+    if c2.button("Neutral Example"):
+        example_comment = "Hii video iko sawa"
+
+    if c3.button("Positive Example"):
+        example_comment = "Great content, keep it up!"
+
+    # -----------------------------
+    # INPUT
+    # -----------------------------
     comment = st.text_area(
-        "Enter a comment to analyze",
-        placeholder="Example: Wewe ni fala kabisa"
+        "💬 Enter a comment to analyze",
+        value=example_comment,
+        placeholder="Example: Wewe ni fala kabisa",
+        height=120
     )
 
-    if st.button("Analyze Comment"):
+    # -----------------------------
+    # ANALYZE BUTTON
+    # -----------------------------
+    if st.button("🚀 Analyze Comment"):
 
         if comment.strip() == "":
             st.warning("Please enter a comment.")
@@ -219,15 +267,14 @@ def show_analysis():
         st.success("Analysis Completed")
 
         # -----------------------------
-        # CATEGORY COLORS
+        # CATEGORY COLORS (KENYAN THEME)
         # -----------------------------
-
         category_colors = {
-            "Constructive": "#16A34A",
+            "Constructive": "#16A34A",   # Green
             "Others": "#F59E0B",
             "Irony": "#38BDF8",
             "Offensive": "#FB923C",
-            "Cyberbullying": "#DC2626",
+            "Cyberbullying": "#DC2626", # Red
             "Harmful": "#991B1B"
         }
 
@@ -236,7 +283,6 @@ def show_analysis():
         # -----------------------------
         # TOXICITY SCORE
         # -----------------------------
-
         toxicity_scores = {
             "Constructive": 1,
             "Others": 2,
@@ -249,9 +295,8 @@ def show_analysis():
         toxicity_level = toxicity_scores.get(result["category"], 3)
 
         # -----------------------------
-        # TOXICITY METER
+        # TOXICITY GAUGE
         # -----------------------------
-
         fig = go.Figure(go.Indicator(
             mode="gauge+number",
             value=toxicity_level,
@@ -260,9 +305,9 @@ def show_analysis():
                 'axis': {'range': [0,10]},
                 'bar': {'color': color},
                 'steps': [
-                    {'range':[0,3],'color':"#16A34A"},
+                    {'range':[0,3],'color':"#16A34A"},  # Green
                     {'range':[3,6],'color':"#F59E0B"},
-                    {'range':[6,10],'color':"#DC2626"}
+                    {'range':[6,10],'color':"#DC2626"}  # Red
                 ]
             }
         ))
@@ -274,63 +319,76 @@ def show_analysis():
         )
 
         # -----------------------------
-        # RESULT DISPLAY
+        # RESULTS LAYOUT
         # -----------------------------
-
         col1, col2 = st.columns([1,1])
 
         with col1:
 
-            st.markdown("### Moderation Results")
+            st.markdown("### 📊 Moderation Results")
 
             st.metric("Language", result["language"])
             st.metric("Sentiment", result["sentiment"])
 
+            # RESULT CARD
             st.markdown(
                 f"""
                 <div style="
                 margin-top:15px;
-                padding:22px;
+                padding:25px;
                 background:#111827;
-                border-radius:14px;
+                border-radius:16px;
                 border-left:6px solid {color};
                 ">
 
-                <h4 style="color:#9CA3AF;margin-bottom:5px;">
+                <h3 style="color:#9CA3AF;margin-bottom:5px;">
                 Category
-                </h4>
-
-                <h2 style="color:{color};margin-top:0;">
-                {result["category"]}
-                </h2>
-
-                <h4 style="color:#9CA3AF;margin-top:15px;margin-bottom:5px;">
-                Subcategory
-                </h4>
-
-                <h3 style="color:#F9FAFB;margin-top:0;">
-                {result["subcategory"]}
                 </h3>
+
+                <h1 style="color:{color};margin-top:0;">
+                {result["category"]}
+                </h1>
+
+                <p style="color:#D1D5DB;">
+                Subcategory: <b>{result["subcategory"]}</b>
+                </p>
 
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
-        with col2:
+            # -----------------------------
+            # INTERPRETATION
+            # -----------------------------
+            st.markdown("### 🧠 Interpretation")
 
+            if result["category"] in ["Cyberbullying", "Harmful"]:
+                st.error("⚠️ This comment is harmful and should be flagged or removed.")
+            elif result["category"] == "Offensive":
+                st.warning("⚠️ This comment may require moderation.")
+            elif result["category"] == "Constructive":
+                st.success("✅ This comment is safe and positive.")
+            else:
+                st.info("ℹ️ This comment is neutral.")
+
+            # -----------------------------
+            # EXPLANATION
+            # -----------------------------
+            st.markdown("### 🤖 Why this prediction?")
+
+            st.info(
+                f"The model classified this as **{result['category']}** "
+                f"based on detected sentiment (**{result['sentiment']}**) "
+                f"and language patterns in the comment."
+            )
+
+        with col2:
             st.plotly_chart(fig, use_container_width=True)
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-
-import pandas as pd
-import plotly.express as px
-import streamlit as st
 def show_batch():
-
-    import pandas as pd
-    import plotly.express as px
 
     st.markdown("## 📂 Batch Comment Moderation")
     st.write("Upload a CSV file for large-scale analysis.")
