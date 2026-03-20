@@ -200,14 +200,62 @@ def show_analysis():
 
     import plotly.graph_objects as go
 
-    st.markdown("## 📊 Comment Analysis")
+    # -----------------------------
+    # TITLE (KENYAN IDENTITY)
+    # -----------------------------
+    st.markdown("""
+    <h2 style="text-align:center;">
+    🇰🇪 AI-Powered Kenyan Comment Analysis
+    </h2>
+    """, unsafe_allow_html=True)
 
+    st.markdown("""
+    <hr style="
+    height:4px;
+    border:none;
+    background: linear-gradient(
+    90deg,
+    black,
+    #DC2626,
+    white,
+    #16A34A
+    );
+    border-radius:3px;
+    ">
+    """, unsafe_allow_html=True)
+
+    # -----------------------------
+    # EXAMPLE BUTTONS
+    # -----------------------------
+    st.markdown("### ⚡ Try Example Comments")
+
+    c1, c2, c3 = st.columns(3)
+
+    example_comment = ""
+
+    if c1.button("Toxic Example"):
+        example_comment = "Wewe ni mjinga kabisa"
+
+    if c2.button("Neutral Example"):
+        example_comment = "Hii video iko sawa"
+
+    if c3.button("Positive Example"):
+        example_comment = "Great content, keep it up!"
+
+    # -----------------------------
+    # INPUT
+    # -----------------------------
     comment = st.text_area(
-        "Enter a comment to analyze",
-        placeholder="Example: Wewe ni fala kabisa"
+        "💬 Enter a comment to analyze",
+        value=example_comment,
+        placeholder="Example: Wewe ni fala kabisa",
+        height=120
     )
 
-    if st.button("Analyze Comment"):
+    # -----------------------------
+    # ANALYZE BUTTON
+    # -----------------------------
+    if st.button("🚀 Analyze Comment"):
 
         if comment.strip() == "":
             st.warning("Please enter a comment.")
@@ -219,15 +267,14 @@ def show_analysis():
         st.success("Analysis Completed")
 
         # -----------------------------
-        # CATEGORY COLORS
+        # CATEGORY COLORS (KENYAN THEME)
         # -----------------------------
-
         category_colors = {
-            "Constructive": "#16A34A",
+            "Constructive": "#16A34A",   # Green
             "Others": "#F59E0B",
             "Irony": "#38BDF8",
             "Offensive": "#FB923C",
-            "Cyberbullying": "#DC2626",
+            "Cyberbullying": "#DC2626", # Red
             "Harmful": "#991B1B"
         }
 
@@ -236,7 +283,6 @@ def show_analysis():
         # -----------------------------
         # TOXICITY SCORE
         # -----------------------------
-
         toxicity_scores = {
             "Constructive": 1,
             "Others": 2,
@@ -249,9 +295,8 @@ def show_analysis():
         toxicity_level = toxicity_scores.get(result["category"], 3)
 
         # -----------------------------
-        # TOXICITY METER
+        # TOXICITY GAUGE
         # -----------------------------
-
         fig = go.Figure(go.Indicator(
             mode="gauge+number",
             value=toxicity_level,
@@ -260,9 +305,9 @@ def show_analysis():
                 'axis': {'range': [0,10]},
                 'bar': {'color': color},
                 'steps': [
-                    {'range':[0,3],'color':"#16A34A"},
+                    {'range':[0,3],'color':"#16A34A"},  # Green
                     {'range':[3,6],'color':"#F59E0B"},
-                    {'range':[6,10],'color':"#DC2626"}
+                    {'range':[6,10],'color':"#DC2626"}  # Red
                 ]
             }
         ))
@@ -274,64 +319,76 @@ def show_analysis():
         )
 
         # -----------------------------
-        # RESULT DISPLAY
+        # RESULTS LAYOUT
         # -----------------------------
-
         col1, col2 = st.columns([1,1])
 
         with col1:
 
-            st.markdown("### Moderation Results")
+            st.markdown("### 📊 Moderation Results")
 
             st.metric("Language", result["language"])
             st.metric("Sentiment", result["sentiment"])
 
+            # RESULT CARD
             st.markdown(
                 f"""
                 <div style="
                 margin-top:15px;
-                padding:22px;
+                padding:25px;
                 background:#111827;
-                border-radius:14px;
+                border-radius:16px;
                 border-left:6px solid {color};
                 ">
 
-                <h4 style="color:#9CA3AF;margin-bottom:5px;">
+                <h3 style="color:#9CA3AF;margin-bottom:5px;">
                 Category
-                </h4>
-
-                <h2 style="color:{color};margin-top:0;">
-                {result["category"]}
-                </h2>
-
-                <h4 style="color:#9CA3AF;margin-top:15px;margin-bottom:5px;">
-                Subcategory
-                </h4>
-
-                <h3 style="color:#F9FAFB;margin-top:0;">
-                {result["subcategory"]}
                 </h3>
+
+                <h1 style="color:{color};margin-top:0;">
+                {result["category"]}
+                </h1>
+
+                <p style="color:#D1D5DB;">
+                Subcategory: <b>{result["subcategory"]}</b>
+                </p>
 
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
-        with col2:
+            # -----------------------------
+            # INTERPRETATION
+            # -----------------------------
+            st.markdown("### 🧠 Interpretation")
 
+            if result["category"] in ["Cyberbullying", "Harmful"]:
+                st.error("⚠️ This comment is harmful and should be flagged or removed.")
+            elif result["category"] == "Offensive":
+                st.warning("⚠️ This comment may require moderation.")
+            elif result["category"] == "Constructive":
+                st.success("✅ This comment is safe and positive.")
+            else:
+                st.info("ℹ️ This comment is neutral.")
+
+            # -----------------------------
+            # EXPLANATION
+            # -----------------------------
+            st.markdown("### 🤖 Why this prediction?")
+
+            st.info(
+                f"The model classified this as **{result['category']}** "
+                f"based on detected sentiment (**{result['sentiment']}**) "
+                f"and language patterns in the comment."
+            )
+
+        with col2:
             st.plotly_chart(fig, use_container_width=True)
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-
-import pandas as pd
-import plotly.express as px
-import streamlit as st
-
 def show_batch():
-
-    import pandas as pd
-    import plotly.express as px
 
     st.markdown("## 📂 Batch Comment Moderation")
     st.write("Upload a CSV file for large-scale analysis.")
@@ -349,7 +406,6 @@ def show_batch():
     if "uploaded_file_id" not in st.session_state:
         st.session_state.uploaded_file_id = None
 
-
     # ---------------------------
     # FILE UPLOADER
     # ---------------------------
@@ -362,10 +418,8 @@ def show_batch():
 
     if uploaded_file is not None:
 
-        # create unique ID for file
         file_id = uploaded_file.name + str(uploaded_file.size)
 
-        # detect NEW file
         if st.session_state.uploaded_file_id != file_id:
 
             df = pd.read_csv(uploaded_file)
@@ -375,7 +429,6 @@ def show_batch():
             st.session_state.batch_results = None
 
         df = st.session_state.batch_df
-
 
         # ---------------------------
         # DETECT TEXT COLUMN
@@ -394,14 +447,12 @@ def show_batch():
             )
             return
 
-
         # ---------------------------
         # PREVIEW DATASET
         # ---------------------------
 
         st.markdown("### 📄 Dataset Preview")
         st.dataframe(df.head())
-
 
         # ---------------------------
         # RUN MODERATION
@@ -432,7 +483,6 @@ def show_batch():
 
                 st.success("✅ Batch analysis completed!")
 
-
     # ---------------------------
     # DISPLAY RESULTS
     # ---------------------------
@@ -444,9 +494,60 @@ def show_batch():
         st.markdown("---")
         st.subheader("📊 Moderation Results")
 
-        st.dataframe(final_df)
+        # ---------------------------
+        # SUMMARY METRICS
+        # ---------------------------
 
-        # Download
+        st.markdown("### 📈 Key Insights")
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        total = len(final_df)
+        toxic = final_df[final_df["category"].isin(["Cyberbullying", "Harmful"])].shape[0]
+        positive = final_df[final_df["sentiment"] == "Positive"].shape[0]
+        negative = final_df[final_df["sentiment"] == "Negative"].shape[0]
+
+        col1.metric("Total Comments", total)
+        col2.metric("Toxic Comments", toxic)
+        col3.metric("Positive", positive)
+        col4.metric("Negative", negative)
+
+        # ---------------------------
+        # HIGHLIGHT TOXIC COMMENTS
+        # ---------------------------
+
+        st.markdown("### ⚠️ High Risk Comments")
+
+        toxic_df = final_df[final_df["category"].isin(["Cyberbullying", "Harmful"])]
+
+        if len(toxic_df) > 0:
+            st.dataframe(toxic_df.head(10))
+        else:
+            st.success("No harmful comments detected")
+
+        # ---------------------------
+        # SORT DATA
+        # ---------------------------
+
+        priority_order = {
+            "Harmful": 1,
+            "Cyberbullying": 2,
+            "Offensive": 3,
+            "Irony": 4,
+            "Others": 5,
+            "Constructive": 6
+        }
+
+        final_df["priority"] = final_df["category"].map(priority_order)
+        final_df = final_df.sort_values("priority")
+
+        st.markdown("### 📄 Full Results")
+        st.dataframe(final_df.drop(columns=["priority"]))
+
+        # ---------------------------
+        # DOWNLOAD
+        # ---------------------------
+
         csv = final_df.to_csv(index=False).encode("utf-8")
 
         st.download_button(
@@ -457,12 +558,15 @@ def show_batch():
         )
 
         # ---------------------------
-        # DASHBOARD
+        # DASHBOARD (KENYAN COLORS)
         # ---------------------------
 
         st.markdown("### 📊 Dataset Insights")
 
         col1, col2 = st.columns(2)
+
+        # Kenyan flag color palette
+        colors = ["#16A34A", "#DC2626", "#000000", "#F59E0B", "#9CA3AF"]
 
         with col1:
 
@@ -470,7 +574,14 @@ def show_batch():
                 final_df,
                 names="category",
                 title="Comment Category Distribution",
-                hole=0.4
+                hole=0.4,
+                color_discrete_sequence=colors
+            )
+
+            fig1.update_layout(
+                plot_bgcolor="#111827",
+                paper_bgcolor="#111827",
+                font=dict(color="#F9FAFB")
             )
 
             st.plotly_chart(fig1, use_container_width=True)
@@ -484,10 +595,29 @@ def show_batch():
                 lang_counts,
                 x="language",
                 y="count",
-                title="Languages Detected"
+                title="Languages Detected",
+                color="language",
+                color_discrete_sequence=["#16A34A", "#DC2626", "#000000"]
+            )
+
+            fig2.update_layout(
+                plot_bgcolor="#111827",
+                paper_bgcolor="#111827",
+                font=dict(color="#F9FAFB")
             )
 
             st.plotly_chart(fig2, use_container_width=True)
+
+        # ---------------------------
+        # INSIGHTS
+        # ---------------------------
+
+        st.markdown("### 🧠 Insights")
+
+        if toxic > 0:
+            st.warning(f"{toxic} harmful comments detected. Immediate moderation recommended.")
+        else:
+            st.success("Dataset is mostly safe with minimal harmful content.")
 def show_assistant():
 
     st.markdown("## 🤖 AI Moderation Assistant")
@@ -580,7 +710,7 @@ The moderation system supports:
 
 • English
 • Kiswahili
-• Kenyan Sheng
+• Kenyan Slang
 
 The AI can detect code-mixed language used in Kenyan social media.
 """
@@ -652,135 +782,157 @@ Analyze: your comment
 def show_system():
 
     # -------------------------
-    # SECTION TITLE
+    # TITLE + KENYAN IDENTITY
     # -------------------------
-
     st.markdown("""
-    <h2 style="text-align:center;margin-bottom:30px;">
-    ⚙ AI Moderation System Overview
+    <h2 style="text-align:center;margin-bottom:10px;">
+    🇰🇪 AI Moderation System Architecture
     </h2>
     """, unsafe_allow_html=True)
 
+    st.markdown("""
+    <hr style="
+    height:4px;
+    border:none;
+    background: linear-gradient(
+    90deg,
+    black,
+    #DC2626,
+    white,
+    #16A34A
+    );
+    border-radius:3px;
+    margin-bottom:25px;
+    ">
+    """, unsafe_allow_html=True)
 
     # -------------------------
     # INTRO CARD
     # -------------------------
-
     st.markdown("""
     <div style="
     background:#111827;
     padding:28px;
     border-radius:14px;
-    border-top:3px solid #DC2626;
+    border-left:5px solid #DC2626;
     margin-bottom:35px;
     ">
-    <h4 style="margin-bottom:10px;color:#F9FAFB;">
-    AI-enabled Kenyan Social Media Moderation
-    </h4>
-
-    <p style="color:#D1D5DB;">
-    This system detects cyberbullying and harmful content across
-    multilingual Kenyan online conversations using machine learning
-    and transformer-based models.
-    </p>
+    <b>System Overview</b><br><br>
+    This is a multi-stage AI pipeline designed to detect cyberbullying in Kenyan 
+    social media by analyzing multilingual text (English, Kiswahili, Kenyan Slang).
+    Each model in the pipeline performs a specific task to improve overall accuracy.
     </div>
     """, unsafe_allow_html=True)
 
+    # -------------------------
+    # PIPELINE FLOW (NEW 🔥)
+    # -------------------------
+    st.markdown("### 🔄 System Pipeline")
+
+    st.markdown("""
+    <pre>
+Input Comment
+      ↓
+Text Preprocessing
+      ↓
+Language Detection
+      ↓
+Sentiment Analysis
+      ↓
+Category Classification
+      ↓
+Subcategory Detection
+      ↓
+Final Moderation Output
+    </pre>
+    """, unsafe_allow_html=True)
+
+    st.write("")
 
     # -------------------------
-    # AI PIPELINE
+    # AI PIPELINE COMPONENTS
     # -------------------------
-
-    st.markdown("### 🧠 Moderation Pipeline")
+    st.markdown("### 🧠 Pipeline Components")
 
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         st.markdown("""
-        <div style="background:#111827;padding:18px;border-radius:12px;border-left:4px solid #16A34A;">
-        <b>1️⃣ Preprocessing</b><br>
-        Cleaning and normalization of comments.
+        <div style="background:#111827;padding:18px;border-radius:12px;border-top:3px solid #16A34A;">
+        <b>Preprocessing</b><br>
+        Cleaning and normalization of multilingual text.
         </div>
         """, unsafe_allow_html=True)
 
     with col2:
         st.markdown("""
-        <div style="background:#111827;padding:18px;border-radius:12px;border-left:4px solid #16A34A;">
-        <b>2️⃣ Language Detection</b><br>
-        Detects English, Kiswahili, or Sheng.
+        <div style="background:#111827;padding:18px;border-radius:12px;border-top:3px solid #16A34A;">
+        <b>Language Detection</b><br>
+        Identifies English, Kiswahili, or Sheng.
         </div>
         """, unsafe_allow_html=True)
 
     with col3:
         st.markdown("""
-        <div style="background:#111827;padding:18px;border-radius:12px;border-left:4px solid #16A34A;">
-        <b>3️⃣ Sentiment Analysis</b><br>
-        Determines comment emotion.
+        <div style="background:#111827;padding:18px;border-radius:12px;border-top:3px solid #16A34A;">
+        <b>Sentiment Analysis</b><br>
+        Determines emotional tone.
         </div>
         """, unsafe_allow_html=True)
 
     with col4:
         st.markdown("""
-        <div style="background:#111827;padding:18px;border-radius:12px;border-left:4px solid #16A34A;">
-        <b>4️⃣ Toxicity Classification</b><br>
-        Detects cyberbullying and harmful language.
+        <div style="background:#111827;padding:18px;border-radius:12px;border-top:3px solid #16A34A;">
+        <b>Classification</b><br>
+        Detects harmful and toxic content.
         </div>
         """, unsafe_allow_html=True)
 
-
     st.write("")
-
 
     # -------------------------
     # MODEL COMPONENTS
     # -------------------------
-
-    st.markdown("### 🧩 Model Components")
+    st.markdown("### 🧩 Model Architecture")
 
     col1, col2 = st.columns(2)
 
     with col1:
         st.markdown("""
         <div style="background:#111827;padding:22px;border-radius:12px;">
-        • Language Detection Model<br>
-        • Sentiment Analysis Model<br>
-        • Category Classification Model
+        <b>Classical Models</b><br><br>
+        • Language Detection → LinearSVC<br>
+        • Sentiment Analysis → LinearSVC
         </div>
         """, unsafe_allow_html=True)
 
     with col2:
         st.markdown("""
         <div style="background:#111827;padding:22px;border-radius:12px;">
-        • Transformer Subcategory Models<br>
-        • Feature Engineering Modules<br>
-        • Text Preprocessing Pipeline
+        <b>Deep Learning Models</b><br><br>
+        • Category Classification → XLM-RoBERTa<br>
+        • Subcategory Detection → Transformers
         </div>
         """, unsafe_allow_html=True)
 
-
     st.write("")
-
 
     # -------------------------
     # SUPPORTED LANGUAGES
     # -------------------------
-
     st.markdown("### 🌍 Supported Languages")
 
     col1, col2, col3 = st.columns(3)
 
-    col1.metric("English", "Supported")
-    col2.metric("Kiswahili", "Supported")
-    col3.metric("Kenyan Sheng", "Supported")
-
+    col1.metric("English", "✔")
+    col2.metric("Kiswahili", "✔")
+    col3.metric("Sheng", "✔")
 
     st.write("")
-
 
     # -------------------------
     # MODERATION CATEGORIES
     # -------------------------
-
     st.markdown("### 🏷 Moderation Categories")
 
     col1, col2, col3 = st.columns(3)
@@ -830,30 +982,24 @@ def show_system():
         </div>
         """, unsafe_allow_html=True)
 
-
     st.write("")
 
-
     # -------------------------
-    # MODEL PERFORMANCE
+    # PERFORMANCE
     # -------------------------
-
     st.markdown("### 📈 Model Performance")
 
     col1, col2, col3 = st.columns(3)
 
-    col1.metric("Language Model", "95% Accuracy")
-    col2.metric("Sentiment Model", "92% Accuracy")
-    col3.metric("Category Model", "90% Accuracy")
-
+    col1.metric("Language Model", "95%")
+    col2.metric("Sentiment Model", "92%")
+    col3.metric("Classification Model", "90%")
 
     st.write("")
 
-
     # -------------------------
-    # TECHNOLOGY STACK
+    # TECH STACK
     # -------------------------
-
     st.markdown("### 🛠 Technology Stack")
 
     col1, col2 = st.columns(2)
