@@ -1,7 +1,68 @@
-ls-env/
-learn-env/
+## ----------------------------
+# Python cache
+# ----------------------------
 __pycache__/
 *.pyc
+<<<<<<< HEAD
 *.dll
 *.def
 .ipynb_checkpoints/
+=======
+*.pyo
+*.pyd
+
+# ----------------------------
+# Jupyter notebooks checkpoints
+# ----------------------------
+.ipynb_checkpoints/
+
+# ----------------------------
+# Virtual environments
+# ----------------------------
+venv/
+env/
+.venv/
+cyberbully/
+
+# ----------------------------
+# System files
+# ----------------------------
+.DS_Store
+Thumbs.db
+
+# ----------------------------
+# Logs
+# ----------------------------
+*.log
+
+# ----------------------------
+# Temporary data
+# ----------------------------
+tmp/
+temp/
+
+# ----------------------------
+# Streamlit cache
+# ----------------------------
+.streamlit/
+
+# ----------------------------
+# Large datasets (optional)
+# ----------------------------
+Data/raw/
+Data/temp/
+
+# ----------------------------
+# Training outputs (optional)
+# ----------------------------
+training/checkpoints/
+training/runs/
+.ipynb_checkpoints
+
+# ----------------------------
+# IDE files
+# ----------------------------
+.vscode/
+.idea/
+.docx
+>>>>>>> ae3ffa552a9dce401ee36e354e48b7dc82227c35
